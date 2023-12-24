@@ -61,16 +61,20 @@
               ff02::2 ip6-allrouters
             dest: /etc/hosts
             mode: preserve
-        # https://github.com/onedr0p/flux-cluster-template/discussions/635
-        - name: Network Configuration | Remove immutable flag from /etc/resolv.conf
+        - name: Stop and disable service which messes with DNS
+          ansible.builtin.service:
+            name: "systemd-resolved"
+            state: stopped
+            enabled: false
+        - name: Delete link to the systemd-resolved resolv.conf
           ansible.builtin.file:
-            attributes: -i
-            path: /etc/resolv.conf
-        - name: Network Configuration | Remove /etc/resolv.conf
-          ansible.builtin.file:
-            attributes: -i
             path: /etc/resolv.conf
             state: absent
+        - name: Create empty resolv.conf
+          ansible.builtin.file:
+            path: /etc/resolv.conf
+            state: touch
+            mode: '0644'
         - name: Network Configuration | Add custom /etc/resolv.conf
           ansible.builtin.copy:
             attributes: +i
@@ -79,6 +83,24 @@
             content: |
               search .
               nameserver 1.1.1.1
+        # https://github.com/onedr0p/flux-cluster-template/discussions/635
+        #- name: Network Configuration | Remove immutable flag from /etc/resolv.conf
+        #  ansible.builtin.file:
+        #    attributes: -i
+        #    path: /etc/resolv.conf
+        #- name: Network Configuration | Remove /etc/resolv.conf
+        #  ansible.builtin.file:
+        #    attributes: -i
+        #    path: /etc/resolv.conf
+        #    state: absent
+        #- name: Network Configuration | Add custom /etc/resolv.conf
+        #  ansible.builtin.copy:
+        #    attributes: +i
+        #    mode: '0644'
+        #    dest: /etc/resolv.conf
+        #    content: |
+        #      search .
+        #      nameserver 1.1.1.1
 
     - name: System Configuration
       notify: Reboot
