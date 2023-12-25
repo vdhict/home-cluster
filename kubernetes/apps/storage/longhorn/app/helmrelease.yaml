@@ -34,9 +34,11 @@ spec:
     ingress:
       enabled: true
       ingressClassName: internal
-      hosts:
-        - host: "longhorn.${SECRET_DOMAIN}"
+      host: "longhorn.${SECRET_DOMAIN}"
       tls: true
+      secureBackends: true
+      tlsSecret: longhorn-tls
+      path: /
     defaultSettings:
       backupstorePollInterval: 300
       backupTarget: "nfs://${NAS_ADDR}:/volume1/clusterbackup"
