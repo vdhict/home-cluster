@@ -24,3 +24,4 @@ resources:
   - ./external-secrets.yaml
   - ./node-feature-discovery.yaml
   - ./intel.yaml
+  - ./cloudnative-pg.yaml
